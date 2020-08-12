@@ -1,0 +1,132 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+
+<style>
+  .container {
+    padding: 30px;
+  }
+  a {
+    display: block;
+    padding: 10px;
+  }
+  #down {
+    margin-top: 200vh;
+  }
+  body:before {
+    display: block;
+    font-size: 30px;
+    padding: 30px;
+  }
+  body.is-entering:before {
+    content: 'is entering';
+  }
+  body.has-entered:before {
+    content: 'has entered';
+  }
+  body.is-leaving:before {
+    content: 'is leaving';
+  }
+  body.has-left:before {
+    content: 'has left';
+  }
+</style>
+
+
+<body>
+
+<div class="container">
+
+  <a href="nowhere">Internal Link</a>
+  <a href="https://stackoverflow.com">External Link</a>
+  <a href="#down">Anchor</a>
+
+  <div id="down">
+    Rabbit Hole
+  </div>
+</div>
+
+
+<script>
+
+// script gets triggered by href. anchors and external links work as usual.
+
+let body;
+
+if (typeof window !== 'undefined') {
+
+  body = document.querySelector('body')
+
+  var host = location.hostname;
+  var links = document.querySelectorAll('[href]')
+
+  var timerIn = 1000;
+  var timerOut = 1000;
+
+  links.forEach((item, i) => {
+
+    if(item.href.includes('#')) {
+      return;
+    }
+
+    if(item.hostname == host) {
+
+      item.addEventListener("click", function() {
+
+        pageTransitionOut(event, timerOut)
+
+      });
+
+    }
+  });
+
+    window.onload = function() {
+
+      pageTransitionIn(timerIn);
+
+    };
+}
+
+
+function pageTransitionIn(timer) {
+
+  body.classList.add('is-entering');
+
+  setTimeout(function() {
+
+    body.classList.add('has-entered');
+    body.classList.remove('is-entering');
+
+  },timer);
+
+}
+
+
+function pageTransitionOut(e, timer) {
+
+  e.preventDefault();
+
+  body.classList.add('is-leaving');
+  body.classList.remove('has-entered');
+
+  setTimeout(function() {
+
+    body.classList.add('has-left');
+
+    window.location = e.srcElement.href;
+
+  },timer);
+
+}
+
+</script>
+
+
+</body>
+
+
+</html>

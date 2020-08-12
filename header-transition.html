@@ -1,0 +1,87 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<style>
+  .container {
+    height: 200vh;
+    border: 1px solid rgba(0,0,0,1);
+  }
+  header {
+    position: fixed;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: rgba(0,0,0,0);
+    transition: background 0.3s ease-out, top 0.4s ease-out;
+  }
+
+  header.has-scrolled {
+    top: -70px;
+    transition: background 0.3s ease-out, top 0.4s ease-out;
+  }
+
+  header.has-scrolled--up {
+    top: 0;
+    background: rgba(0,0,0,.5);
+  }
+</style>
+
+<body>
+
+<div class="container">
+
+  <header>Header</header>
+
+</div>
+
+<script>
+
+  var header, classScrollsTop, classScrollsDown, offset;
+
+  if (typeof window !== 'undefined') {
+
+    header = document.querySelector('header');
+
+    classScrollsTop = 'has-scrolled--up';
+    classScrollsDown = 'has-scrolled';
+
+    offset = 100;
+
+    window.addEventListener('scroll', transition);
+    window.addEventListener('resize', transition);
+
+  }
+
+  function transition() {
+
+    var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+    (scrollY <= Math.max(this.lastScroll, 0)|| this.loaded === undefined)
+
+      ? header.classList.add(classScrollsTop)
+      : header.classList.remove(classScrollsTop);
+
+    (window.pageYOffset > offset)
+
+      ? header.classList.add(classScrollsDown)
+      : header.classList.remove(classScrollsDown, classScrollsTop);
+
+    this.lastScroll = scrollY;
+
+    this.loaded = true;
+
+  }
+
+</script>
+
+
+</body>
+
+
+</html>

@@ -1,0 +1,108 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+
+<style>
+  .image-holder {
+    margin-bottom: 100px;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .image-holder:nth-of-type(odd) {
+    text-align: left;
+  }
+  .image-holder:nth-of-type(odd) img {
+    max-width: 400px;
+  }
+  .image-holder:nth-of-type(even) {
+    text-align: right;
+  }
+  .image-holder:nth-of-type(even) img {
+    max-width: 200px;
+  }
+  img {
+    width: 100%;
+    height: auto;
+  }
+</style>
+
+
+<body>
+
+<div class="container">
+
+  <div class="image-holder">
+    <img src="assets/image.png">
+  </div>
+
+  <div class="image-holder" data-p="-0.3" >
+    <img src="assets/image.png">
+  </div>
+
+  <div class="image-holder" data-p="0.2" data-y="true">
+    <img src="assets/image.png">
+  </div>
+
+  <div class="image-holder" data-p="-0.2">
+    <img src="assets/image.png">
+  </div>
+
+  <div class="image-holder" data-p="-0.1" data-y="true">
+    <img src="assets/image.png">
+  </div>
+
+  <div class="image-holder" data-p="-0.2">
+    <img src="assets/image.png">
+  </div>
+
+</div>
+
+
+<script>
+
+if (typeof window !== 'undefined') {
+
+  window.addEventListener("scroll", parallax);
+
+  function parallax() {
+
+      var parallaxItems = document.querySelectorAll('[data-p]');
+
+      parallaxItems.forEach((item, i) => {
+
+        var mulitplicator = item.dataset.p;
+        var isHorizontal = item.dataset.y;
+
+        var enteredViewport = item.getBoundingClientRect().top - window.innerHeight; // if the item enters the screen
+
+        if(enteredViewport < 0 ) {
+
+          if(isHorizontal) {
+
+            item.style.transform = "translateX(" + enteredViewport * -mulitplicator  + "px)";
+
+          } else {
+
+            item.style.transform = "translateY(" + enteredViewport * -mulitplicator  + "px)";
+          }
+
+        }
+
+      })
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+
+</html>

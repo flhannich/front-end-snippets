@@ -1,0 +1,141 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<style>
+  body {
+    font-family: sans-serif;
+    padding: 8vw 5vw;
+  }
+  .container {
+    max-width: 550px;
+  }
+  div.line-by-line {
+  }
+  div.text-line {
+    overflow: hidden;
+  }
+  span.line-container {
+    display: block;
+    /* transform: translateY(10px); */
+  }
+</style>
+
+<body>
+
+<div class="container">
+
+
+  <h1 class="line-by-line">
+    Lorem ipsum dolor sit amet, <em>adipiscing</em>
+  </h1>
+
+  <p class="line-by-line">
+    Lorem ipsum dolor sit amet, <em>consectetur</em> adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum blub.
+  </p>
+
+</div>
+
+<script>
+
+// Works only on "load" when setTimeout is <section>
+// last foreach loop "wrappedWordsRes" is very hacky
+
+function resetLineByLine() {
+
+  let selector = '.line-by-line'
+
+  var wrapper = document.querySelectorAll(selector);
+
+  wrapper.forEach((wrapper, i) => {
+
+    let container = wrapper.querySelectorAll('.line-container');
+
+    if(container.length !== 0) {
+      res = '';
+
+      container.forEach((item, i) => {
+        res += item.innerHTML;
+      });
+
+      wrapper.innerHTML = res;
+    }
+  });
+}
+
+
+function lineByLine() {
+
+  setTimeout(function(){
+
+  var wrapper = document.querySelectorAll('.line-by-line');
+
+  wrapper.forEach((wrapper, i) => {
+
+    var str = wrapper.innerHTML;
+    var words = str.split(' ');
+
+    var wrappedWords = '';
+
+    words.forEach((item, i) => {
+
+      if (item !== '') {
+        wrappedWords += '<span>' + item + ' </span>';
+      }
+
+    });
+
+    wrapper.innerHTML = wrappedWords;
+
+    var wrappedWordsRes = wrapper.querySelectorAll('span');
+
+    var posTop = 0;
+    var textContent = '';
+    var res = '';
+
+    var beforeText = '<div class="text-line"><span class="line-container">';
+    var afterText = '</span></div>';
+
+    wrappedWordsRes.forEach((item, i, arr) => {
+
+      if(item.offsetTop > posTop) {
+
+        res += beforeText + textContent + afterText;
+        textContent = '';
+
+      }
+
+      posTop = item.offsetTop;
+      textContent += item.innerHTML;
+
+      // loop is finished here. Last Line won't get inserted cause insert statement sits above textContent (Word collector);
+      // if I change the sequence it breaks
+
+      if(!arr[i + 1]) { // On last loop insert
+
+        res += beforeText + textContent + afterText;
+
+      }
+
+    });
+
+    wrapper.innerHTML = res;
+
+  });
+}, 500);
+}
+
+document.addEventListener("load", lineByLine, true);
+window.addEventListener('resize', resetLineByLine, true);
+
+
+</script>
+
+
+</body>
+
+
+</html>

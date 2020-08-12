@@ -1,0 +1,134 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+
+<style>
+  .image-holder {
+    margin-bottom: 100px;
+    text-align: center;
+  }
+  .image-holder.is-lazy {
+    opacity: 0;
+    transform: translateY(100px);
+    transition: all 1s ease-out;
+  }
+  .image-holder.has-loaded {
+  }
+  .image-holder.has-entered {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  img {
+    width: 70vw;
+    height: 70vh;
+  }
+</style>
+
+
+<body>
+
+<div class="container">
+
+  <div class="image-holder">
+    <img data-src="./assets/image.png">
+  </div>
+
+  <div class="image-holder">
+    <img data-src="assets/image.png">
+  </div>
+
+  <div class="image-holder">
+    <img data-src="assets/image.png">
+  </div>
+
+  <div class="image-holder">
+    <img data-src="assets/image.png">
+  </div>
+
+  <div class="image-holder">
+    <img data-src="assets/image.png">
+  </div>
+
+</div>
+
+
+<script>
+
+  var elem, className, time
+
+  if (typeof window !== 'undefined') {
+
+    elem = document.querySelectorAll('[data-src]');
+    enteredScreenClassName = 'has-entered'
+    lazyClassName = 'is-lazy';
+    loadedClassName = 'has-loaded';
+    pause = 10;
+
+    window.addEventListener('load', lazyLoad);
+    window.addEventListener('scroll', lazyLoad);
+    window.addEventListener('resize', lazyLoad);
+
+  }
+
+
+  function lazyLoad() {
+
+    var initialTimer;
+
+    if (initialTimer) {
+      clearTimeout(initialTimer);
+    }
+
+    initialTimer = setTimeout(function() {
+
+      var scrollPos = window.pageYOffset;
+      var windowHeight = window.innerHeight;
+
+      elem.forEach((item, i) => {
+
+        var itemPos =  scrollPos + item.getBoundingClientRect().top;
+
+        item.parentNode.classList.add(lazyClassName);
+
+        if(itemPos < scrollPos + (windowHeight / 1.22)) {
+
+          item.parentNode.classList.add(enteredScreenClassName);
+
+        }
+        if(itemPos < scrollPos + (windowHeight * 2) && item.dataset.src !== undefined) {
+
+            item.setAttribute('src', item.dataset.src);
+            item.removeAttribute('data-src');
+
+            if(item.dataset.srcset) {
+
+              item.setAttribute('srcset', item.dataset.srcset);
+              item.removeAttribute('data-srcset');
+
+            }
+
+
+            item.onload = function() {
+              item.parentNode.classList.add(loadedClassName);
+            }
+
+        }
+
+
+      })
+
+    }, pause);
+
+  }
+
+</script>
+
+
+</body>
+
+
+</html>

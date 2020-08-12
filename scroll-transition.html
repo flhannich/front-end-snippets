@@ -1,0 +1,90 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+
+<style>
+  section {
+    display: block;
+    max-width: 700px;
+    height: 74vh;
+    margin: 0 auto 100px auto;
+    background: #eee;
+    transition: background 1s ease-out;
+  }
+  section.in-viewport {
+    background: #555;
+  }
+</style>
+
+
+<body>
+
+<div class="container">
+
+  <section></section>
+
+  <section></section>
+
+  <section></section>
+
+  <section></section>
+
+</div>
+
+
+<script>
+
+var elem, className, time
+
+if (typeof window !== 'undefined') {
+
+  elem = document.querySelectorAll('section');
+  className = 'in-viewport';
+  time = 30;
+
+  window.addEventListener('load', scrollTransitions);
+  window.addEventListener('scroll', scrollTransitions);
+  window.addEventListener('resize', scrollTransitions);
+
+}
+
+function scrollTransitions() {
+
+  var initialTimer;
+
+  if (initialTimer) {
+    clearTimeout(initialTimer);
+  }
+
+  initialTimer = setTimeout(function() {
+
+    var scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+
+    elem.forEach((item, i) => {
+
+      var itemHeight = item.offsetHeight;
+      var itemPos =  scrollPos + item.getBoundingClientRect().top;
+
+      (itemPos - window.innerHeight < scrollPos)
+
+      ? item.classList.add(className)
+      : item.classList.remove(className);
+
+    })
+
+  }, time);
+
+}
+
+
+</script>
+
+
+</body>
+
+
+</html>
