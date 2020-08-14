@@ -1,0 +1,92 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<style>
+  .container {
+  }
+  .cursor {
+
+  }
+</style>
+
+<body>
+
+<div class="container"></div>
+<div class="cursor"></div>
+
+<script>
+
+  function costumCursor() {
+
+      let container = document.querySelector('container');
+
+      let cursorWidth, cursorHeight;
+
+      let cursor = document.querySelector('.cursor');
+
+      let child = cursor.firstElementChild;
+
+      container.addEventListener('mouseenter', e => {
+
+        cursor.removeAttribute('style');
+
+        child.classList.add('is-visible');
+        child.classList.remove('is-hidden');
+
+        cursorWidth = child.offsetWidth;
+        cursorHeight = child.offsetHeight;
+
+        document.addEventListener("mousemove", moveMouse);
+
+      }, false);
+
+
+      container.addEventListener('mouseleave', e => {
+
+        document.removeEventListener("mousemove", moveMouse);
+
+        child.classList.add('is-hidden');
+        child.classList.remove('is-visible');
+
+      }, false);
+
+      let scrollTimer = null;
+
+      window.addEventListener('scroll', e => {
+        if(child.classList.contains('is-visible')) {
+
+          let cursorRect = child.getBoundingClientRect();
+
+          let cursorPosY = document.documentElement.scrollTop + cursorRect.top;
+          let cursorPosX = cursorRect.left;
+
+          cursor.style.transform = "translate(0, 0)";
+          cursor.style.top =  cursorPosX + "px",
+          cursor.style.left =  cursorPosY + "px";
+          cursor.style.position = "absolute";
+
+        }
+      }, false);
+
+
+    function moveMouse(e) {
+      cursorPosX = e.clientX;
+      cursorPosY = e.clientY;
+      document.querySelector('.swiper-cursor').style.transform = `translate(${cursorPosX - cursorWidth /2}px, ${cursorPosY - cursorHeight/2}px)`;
+
+    }
+
+  }
+
+  //
+  // let container = document.querySelector('.__gallery');
+  // costumCursor(container);
+
+  </script>
+
+  </body>
+  </html>
