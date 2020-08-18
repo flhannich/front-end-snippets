@@ -1,0 +1,345 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<style>
+
+/*
+  -Needs box-sizing border-box
+  -Class names are hardcoded
+*/
+
+ * {
+   box-sizing: border-box;
+   font-family: sans-serif;
+ }
+  body {
+    padding: 0;
+    margin: 0;
+  }
+  h2 {
+    font-size: 20px;
+  }
+  .container {
+    padding-top: 100px;
+    max-width: 85%;
+    margin: 0 auto;
+  }
+  .slider {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 0;
+    -webkit-backface-visibility: hidden;
+  }
+  .slides-wrapper {
+    -webkit-backface-visibility: hidden;
+    line-height: 0;
+    font-size: 0;
+  }
+  .slides-wrapper:not(.is-dragging) {
+    transition: transform .4s ease-out;
+    -webkit-backface-visibility: hidden;
+  }
+  .slide {
+    display: inline-block;
+    width: 100%;
+    height: 400px;
+    background-color: #ddd;
+    padding: 40px;
+  }
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .bullet {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    z-index: 3;
+    cursor: pointer;
+  }
+  .bullet:after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    top: 11px;
+    left: 11px;
+    border-radius: 100%;
+    background: #999;
+    transition: transform 0.3s cubic-bezier(.32,.37,.05,1.01);
+  }
+  .bullet.is-active:after {
+    background: #181818
+  }
+  .controls {
+    display: flex;
+    position: absolute;
+    top: 0;
+    width: 50%;
+    bottom: 0;
+    z-index: 1;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+  }
+  .controls.next {
+    right: 0;
+  }
+  .controls.prev {
+    left: 0;
+  }
+  .controls.is-disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
+   .color-1 {
+     background-color: #ddd;
+   }
+   .color-2 {
+     background-color: #999;
+   }
+   .color-3 {
+     background-color: #bbb;
+   }
+</style>
+
+<body>
+
+<div class="container">
+
+  <div class="slider">
+    <div class="slides-wrapper">
+      <div class="slide color-1"></div>
+      <div class="slide color-2"></div>
+      <div class="slide color-3"></div>
+      <div class="slide color-1"></div>
+      <div class="slide color-2"></div>
+    </div>
+    <div class="controls next" data-cursor>Next</div>
+    <div class="controls prev" data-cursor>Prev</div>
+    <div class="pagination"></div>
+  </div>
+
+</div>
+
+<script>
+
+if (typeof window !== 'undefined') {
+
+  var slider = document.querySelectorAll('.slider');
+
+  setTimeout(function() {
+
+  slider.forEach((item, i) => {
+    var posTouchStart = 0;
+    var distanceTouchMove = 0;
+    var posX = 0;
+    var index = 1;
+    var next = item.querySelector('.next');
+    var prev = item.querySelector('.prev');
+    var wrapper = item.querySelector('.slides-wrapper');
+    var paginationWrapper = item.querySelector('.pagination');
+    var slides = item.querySelectorAll('.slide');
+    var length = slides.length;
+    var width = wrapper.getBoundingClientRect().width;
+
+    var treshold = 72;
+
+    var res;
+
+    next.addEventListener('click', function() { shiftSlide(1) });
+    prev.addEventListener('click', function() { shiftSlide(-1) });
+
+    item.addEventListener('touchstart', dragStart );
+    item.addEventListener('touchmove', dragMove );
+    item.addEventListener('touchend', dragEnd );
+
+    window.addEventListener('resize', function() {
+
+      clearTimeout(res);
+
+      res = setTimeout(function() {
+
+        width = wrapper.offsetWidth;
+        posX = width * (index - 1);
+        wrapper.style.transform = "translate3D(" + -posX + "px, 0, 0) translateZ(0)";
+
+      }, 200);
+    });
+
+    createPagination();
+
+    slides.forEach((item, i) => {
+      item.setAttribute('data-index', i + 1);
+    });
+
+    updateState(index);
+
+
+
+    function updateState(index) {
+
+      let active = item.querySelectorAll("[data-index]");
+
+      active.forEach((item, i) => {
+
+        item.classList.remove('is-active');
+
+        if(item.dataset.index == index) {
+          item.classList.add('is-active');
+        }
+
+      });
+
+
+      if(index == 1) {
+        prev.classList.add('is-disabled')
+      }
+
+      else if(index == length){
+        next.classList.add('is-disabled')
+      }
+
+      else {
+        prev.classList.remove('is-disabled')
+        next.classList.remove('is-disabled')
+      }
+
+    }
+
+
+    function createPagination() {
+
+      paginationWrapper.innerHTML = "";
+
+      slides.forEach((item, i) => {
+
+        let bullet = document.createElement('div');
+
+        bullet.setAttribute('class', 'bullet');
+
+
+        bullet.setAttribute('data-index', i + 1);
+
+        paginationWrapper.appendChild(bullet);
+
+        bullet.addEventListener('click', function() { goToSlide(i) })
+        bullet.addEventListener('touchstart', function() { goToSlide(i) })
+
+      });
+
+    }
+
+    function goToSlide(i) {
+
+        posX = width * i;
+
+        wrapper.style.transform = "translate3D(" + -posX + "px, 0, 0)";
+
+        index = i + 1;
+
+        bullets = event.target.parentNode.querySelectorAll('.bullet');
+
+        bullets.forEach((item, i) => {
+          item.classList.remove('is-active')
+        });
+
+        event.target.classList.add('is-active');
+
+        updateState(index);
+
+    }
+
+
+    function dragStart(e) {
+
+      e.preventDefault();
+
+      posTouchStart = e.touches[0].clientX;
+
+    }
+
+    function dragMove(e) {
+
+      e.preventDefault();
+      wrapper.classList.add('is-dragging');
+
+      distanceTouchMove = posTouchStart - e.touches[0].clientX;
+
+      wrapper.style.transform = "translate3D(" + -(distanceTouchMove + posX) + "px, 0, 0)";
+
+
+    }
+
+    function dragEnd(e) {
+
+      e.preventDefault();
+
+      if (distanceTouchMove > treshold ) {
+        shiftSlide(1)
+      }
+
+      if (distanceTouchMove < -treshold ) {
+        shiftSlide(-1)
+      }
+
+      else {
+        wrapper.style.transform = "translate3D(" + -posX + "px, 0, 0)";
+      }
+
+      posTouchStart = 0;
+      distanceTouchMove = 0;
+      wrapper.classList.remove('is-dragging');
+    }
+
+
+    function shiftSlide(dir) {
+
+      if(dir == 1 && length > index) {
+        console.log(width);
+        posX += width * dir;
+        wrapper.style.transform = "translate3D(" + -posX + "px, 0 ,0)";
+        index++;
+      }
+
+      else if(dir == -1 && index != 1) {
+        posX += width * dir;
+        wrapper.style.transform = "translate3D(" + -posX + "px, 0, 0)";
+        index--;
+      }
+
+      if(index == 1){
+        posX = 0;
+        wrapper.style.transform = "translate3D(0px, 0 , 0)"
+        index = 1;
+      }
+
+      if(index == length){
+        posX = width * (length - 1);
+        wrapper.style.transform = "translate3D(" + -posX + "px, 0, 0)";
+        index = length;
+        next.classList.add('is-disabled')
+      }
+
+      updateState(index);
+
+    };
+
+  });
+
+  }, 100);
+
+  }
+
+</script>
+
+  </body>
+  </html>

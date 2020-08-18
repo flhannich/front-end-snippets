@@ -6,85 +6,114 @@
 </head>
 
 <style>
-  .container {
+  body {
+    cursor: none;
+    padding: 0;
+    margin: 0;
   }
-  .cursor {
+  .container {
+    padding-top: 100px;
+  }
+  .target {
+    margin-bottom: 100px;
+    margin-left: 30%;
+    width: 200px;
+    height: 200px;
+    background-color: #ddd;
+  }
+  .target-2 {
+    margin-left: auto;
+    margin-right: 30%;
+    width: 200px;
+    height: 200px;
+    background-color: #ddd;
+  }
 
+  .cursor {
+    position: absolute;
+    top: -12px;
+    left: -12px;
+    z-index: 100;
+    pointer-events: none;
+  }
+  .cursor:after {
+    content: '';
+    display: block;
+    width: 25px;
+    height: 25px;
+    border: 1px solid #181818;
+    border-radius: 100%;
+    transform: scale(1);
+    transition: transform 0.2s ease-out;
+  }
+  .cursor.is-active:after {
+    transform: scale(1.25);
   }
 </style>
 
 <body>
 
-<div class="container"></div>
-<div class="cursor"></div>
+<div class="container">
 
+  <div class="target" data-cursor></div>
+  <div class="target-2" data-cursor></div>
+
+  <div class="cursor"></div>
+
+</div>
 <script>
 
-  function costumCursor() {
 
-      let container = document.querySelector('container');
+if (typeof window !== 'undefined') {
 
-      let cursorWidth, cursorHeight;
+      var cursorPosX, cursorPosY;
+      var posY = 0;
 
-      let cursor = document.querySelector('.cursor');
+      var wrapper = window;
+      var targets = document.querySelectorAll('[data-cursor]');
+      var cursor = document.querySelector('.cursor');
 
-      let child = cursor.firstElementChild;
+      wrapper.addEventListener('mousemove', mousePos);
 
-      container.addEventListener('mouseenter', e => {
+      targets.forEach((item, i) => {
+        item.addEventListener('mouseenter', mouseEnter);
+        item.addEventListener('mouseleave', mouseLeave);
+      });
 
-        cursor.removeAttribute('style');
+      window.addEventListener('scroll', getYPos);
 
-        child.classList.add('is-visible');
-        child.classList.remove('is-hidden');
+      function getYPos(){
+        posY = window.scrollY;
+      }
 
-        cursorWidth = child.offsetWidth;
-        cursorHeight = child.offsetHeight;
+      function mousePos() {
+        cursorPosX = event.clientX;
+        cursorPosY = event.clientY;
+      }
 
-        document.addEventListener("mousemove", moveMouse);
+      function mouseEnter() {
+        setTimeout(function() {
+          cursor.classList.add('is-active');
+        },50);
+      }
 
-      }, false);
+      function mouseLeave() {
+        setTimeout(function() {
+          cursor.classList.remove('is-active');
+        },50);
+      }
 
+      function setPos() {
+        cursor.style.transform = `translate(${cursorPosX}px, ${cursorPosY + posY}px)`;
+      }
 
-      container.addEventListener('mouseleave', e => {
-
-        document.removeEventListener("mousemove", moveMouse);
-
-        child.classList.add('is-hidden');
-        child.classList.remove('is-visible');
-
-      }, false);
-
-      let scrollTimer = null;
-
-      window.addEventListener('scroll', e => {
-        if(child.classList.contains('is-visible')) {
-
-          let cursorRect = child.getBoundingClientRect();
-
-          let cursorPosY = document.documentElement.scrollTop + cursorRect.top;
-          let cursorPosX = cursorRect.left;
-
-          cursor.style.transform = "translate(0, 0)";
-          cursor.style.top =  cursorPosX + "px",
-          cursor.style.left =  cursorPosY + "px";
-          cursor.style.position = "absolute";
-
-        }
-      }, false);
-
-
-    function moveMouse(e) {
-      cursorPosX = e.clientX;
-      cursorPosY = e.clientY;
-      document.querySelector('.swiper-cursor').style.transform = `translate(${cursorPosX - cursorWidth /2}px, ${cursorPosY - cursorHeight/2}px)`;
-
-    }
+      function render() {
+        setPos();
+        window.requestAnimationFrame(render);
+      }
+        window.requestAnimationFrame(render);
 
   }
-
-  //
-  // let container = document.querySelector('.__gallery');
-  // costumCursor(container);
 
   </script>
 

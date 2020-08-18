@@ -55,17 +55,30 @@
 
 // script gets triggered by href. anchors and external links work as usual.
 
-let body;
+var body;
+
+var timerIn = 1000;
+var timerOut = 1000;
 
 if (typeof window !== 'undefined') {
+
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      pagetransitionOutReset();
+      pageTransitionIn(750);
+    }
+  });
+
+  setTimeout( function() {
+
+    pageTransitionIn(timerIn);
+
+  }, 200);
 
   body = document.querySelector('body')
 
   var host = location.hostname;
   var links = document.querySelectorAll('[href]')
-
-  var timerIn = 1000;
-  var timerOut = 1000;
 
   links.forEach((item, i) => {
 
@@ -84,12 +97,10 @@ if (typeof window !== 'undefined') {
     }
   });
 
-    window.onload = function() {
 
-      pageTransitionIn(timerIn);
-
-    };
 }
+
+
 
 
 function pageTransitionIn(timer) {
@@ -121,6 +132,10 @@ function pageTransitionOut(e, timer) {
 
   },timer);
 
+}
+
+function pagetransitionOutReset() {
+  body.classList.remove('is-leaving', 'has-left');
 }
 
 </script>
