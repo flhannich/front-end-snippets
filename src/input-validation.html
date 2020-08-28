@@ -115,10 +115,12 @@
 
 // This is just a simple client side validation. Always validate user input server-side
 
+// ADD LAST CHECK for submiting the forms
+
 var forms = document.querySelectorAll('form');
 var formTimeOut;
 
-var submit = [];
+var submit = false;
 
 var nameFalse = '&#9888; Please enter your first and last name';
 var emailFalse = '&#9888; Somethings wrong about you\'re E-mail' ;
@@ -141,7 +143,7 @@ forms.forEach((item, i) => {
     formTimeOut = setTimeout(function(){
 
       checkInput(input);
-
+      console.log(submit);
     }, 1500)
 
   });
@@ -160,7 +162,7 @@ function checkSubmit(item) {
     checkInput(item);
   });
 
-  if (!submit.includes(false)) {
+  if (submit !== false) {
     item.submit();
   }
 
@@ -195,27 +197,39 @@ function checkInput(input) {
 
 
 function validateName(input) {
-  (input.value.match(/^[A-Za-z]*\s{1}[A-Za-z]*$/))
-  ? messageOK(input)
-  : messageFailed(input, nameFalse)
+  if(input.value.match(/^[A-Za-z]*\s{1}[A-Za-z]*$/)) {
+    messageOK(input);
+  }
+  else {
+    messageFailed(input, nameFalse);
+  }
 }
 
 function validateEmail(input) {
-  (input.value.match(/^[A-Za-z\._\-[0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/))
-  ? messageOK(input)
-  : messageFailed(input, emailFalse)
+  if(input.value.match(/^[A-Za-z\._\-[0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/)) {
+    messageOK(input);
+  }
+  else {
+    messageFailed(input, emailFalse);
+  }
 }
 
 function validateTel(input) {
-  (input.value.match(/^[0-9]{6,15}$/))
-  ? messageOK(input)
-  : messageFailed(input, telFalse)
+  if(input.value.match(/^[0-9]{6,15}$/)) {
+    messageOK(input);
+  }
+  else {
+    messageFailed(input, telFalse);
+  }
 }
 
 function validateMessage(input) {
-  (input.value.match(/^.{0,10000}$/))
-  ? messageOK(input)
-  : messageFailed(input, messageFalse)
+  if(input.value.match(/^.{0,10000}$/)) {
+    messageOK(input);
+  }
+  else {
+    messageFailed(input, messageFalse);
+  }
 }
 
 
@@ -225,7 +239,6 @@ function messageOK(input) {
   parent.classList.remove('is-invalid')
   parent.classList.add('is-valid')
   target.innerHTML = ''
-  submit.push(true);
 }
 
 function messageFailed(input, message) {
@@ -234,7 +247,6 @@ function messageFailed(input, message) {
   parent.classList.remove('is-valid')
   parent.classList.add('is-invalid')
   target.innerHTML = message;
-  submit.push(false);
 }
 
 
