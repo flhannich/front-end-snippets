@@ -1,0 +1,246 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+
+<style>
+  body {
+    font-family: sans-serif;
+    font-size: 15px;
+  }
+
+  div.container {
+    padding: 50px;
+    max-width: 300px;
+  }
+
+  div.form-group {
+    position: relative;
+    padding-bottom: 15px;
+  }
+
+  div.form-group.is-invalid input,
+  div.form-group.is-invalid textarea {
+    border: 1px solid red;
+  }
+
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 13px;
+  }
+
+  input {
+    line-height: 35px;
+    padding: 0 10px;
+    width: 100%;
+    outline: none;
+    border: 1px solid #999;
+    border-radius: 3px;
+  }
+
+  input:focus {
+    border: 1px solid;
+  }
+
+  textarea {
+    padding: 10px;
+    font-family: sans-serif;
+    min-height: 150px;
+    width: 100%;
+    border: 1px solid #999;
+    outline: none;
+    border-radius: 3px;
+  }
+
+  textarea:focus {
+    border: 1px solid;
+  }
+
+  input[type=submit] {
+    border-radius: 3px;
+  }
+
+  div.message {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: right;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    color: red;
+  }
+
+
+</style>
+
+
+<body>
+
+<div class="container">
+
+    <form>
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" name="name">
+        <div class="message"></div>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="tel" name="phone">
+        <div class="message"></div>
+      </div>
+      <div class="form-group">
+        <label for="mail">E-mail</label>
+        <input type="email" name="mail">
+        <div class="message"></div>
+      </div>
+      <div class="form-group">
+        <label for="message">Nachricht</label>
+        <textarea name="message"></textarea>
+        <div class="message"></div>
+      </div>
+      <input type="submit">
+    </form>
+
+
+</div>
+
+
+<script>
+
+// This is just a simple client side validation. Always validate user input server-side
+
+var forms = document.querySelectorAll('form');
+var formTimeOut;
+
+var submit = [];
+
+var nameFalse = '&#9888; Please enter your first and last name';
+var emailFalse = '&#9888; Somethings wrong about you\'re E-mail' ;
+var telFalse = '&#9888; You\'re phone number seems wrong';
+var messageFalse = '&#9888; You\'re message is too long';
+
+forms.forEach((item, i) => {
+
+  item.addEventListener('submit', function() {
+    event.preventDefault();
+    checkSubmit(item);
+  });
+
+  item.addEventListener('input', function() {
+
+    clearTimeout(formTimeOut);
+
+    let input = event.target;
+
+    formTimeOut = setTimeout(function(){
+
+      checkInput(input);
+
+    }, 1500)
+
+  });
+
+});
+
+function checkSubmit(item) {
+  let input = item.querySelectorAll('input');
+  let textarea = item.querySelectorAll('textarea');
+
+  input.forEach((item, i) => {
+    checkInput(item);
+  });
+
+  textarea.forEach((item, i) => {
+    checkInput(item);
+  });
+
+  if (!submit.includes(false)) {
+    item.submit();
+  }
+
+}
+
+
+function checkInput(input) {
+
+  let type = input.getAttribute('type');
+
+  if(type == 'text') {
+    validateName(input);
+  }
+
+  else if(type == 'email') {
+    validateEmail(input);
+  }
+
+  else if(type == 'tel') {
+    validateTel(input);
+  }
+
+  else if(input.tagName == 'TEXTAREA') {
+    validateMessage(input);
+  }
+
+  else {
+    return;
+  }
+
+}
+
+
+function validateName(input) {
+  (input.value.match(/^[A-Za-z]*\s{1}[A-Za-z]*$/))
+  ? messageOK(input)
+  : messageFailed(input, nameFalse)
+}
+
+function validateEmail(input) {
+  (input.value.match(/^[A-Za-z\._\-[0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/))
+  ? messageOK(input)
+  : messageFailed(input, emailFalse)
+}
+
+function validateTel(input) {
+  (input.value.match(/^[0-9]{6,15}$/))
+  ? messageOK(input)
+  : messageFailed(input, telFalse)
+}
+
+function validateMessage(input) {
+  (input.value.match(/^.{0,10000}$/))
+  ? messageOK(input)
+  : messageFailed(input, messageFalse)
+}
+
+
+function messageOK(input) {
+  parent = input.parentNode;
+  target = parent.querySelector('.message');
+  parent.classList.remove('is-invalid')
+  parent.classList.add('is-valid')
+  target.innerHTML = ''
+  submit.push(true);
+}
+
+function messageFailed(input, message) {
+  parent = input.parentNode;
+  target = parent.querySelector('.message');
+  parent.classList.remove('is-valid')
+  parent.classList.add('is-invalid')
+  target.innerHTML = message;
+  submit.push(false);
+}
+
+
+
+</script>
+
+</body>
+
+</html>
