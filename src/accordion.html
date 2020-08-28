@@ -1,0 +1,106 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+
+<style>
+  body {
+    font-family: sans-serif;
+    font-size: 15px;
+  }
+  div.container {
+    padding: 50px;
+  }
+  div.wrapper {
+    max-width: 500px;
+  }
+  div.item {
+  }
+  div.item .item__title {
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 10px;
+  }
+  div.item .item__title:hover {
+    background-color: #f5f5f5;
+  }
+  div.item .item__title:after {
+    content: '+';
+  }
+  div.item .item__content {
+    display: none;
+    padding: 10px 10px 20px 10px;
+  }
+  div.item.is-active .item__content {
+    display: block;
+  }
+  div.item.is-active .item__title:after {
+    content: '-';
+  }
+</style>
+
+
+<body>
+
+<div class="container">
+
+  <div class="wrapper" data-accordion>
+
+    <div class="item">
+      <div class="item__title">Title 1</div>
+      <div class="item__content">
+        <span>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. </span>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item__title">Title 2</div>
+      <div class="item__content">
+        <span>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. </span>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item__title">Title 3</div>
+      <div class="item__content">
+        <span>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. </span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+var accordions = document.querySelectorAll('[data-accordion]');
+var accordionChildWrapper = 'item';
+
+if(accordions) {
+
+  accordions.forEach((item, i) => {
+
+    item.addEventListener('click', function() {
+
+      var trigger = event.target.parentNode;
+
+      (trigger.classList.contains('is-active', accordionChildWrapper))
+        ? trigger.classList.remove('is-active')
+        : trigger.classList.add('is-active');
+
+    })
+
+  });
+
+}
+
+</script>
+
+</body>
+
+</html>
