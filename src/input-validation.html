@@ -198,42 +198,42 @@ function checkInput(input) {
 
 function validateName(input) {
   if(input.value.match(/^[A-Za-z]*\s{1}[A-Za-z]*$/)) {
-    messageOK(input);
+    messageValid(input);
   }
   else {
-    messageFailed(input, nameFalse);
+    messageInvalid(input, nameFalse);
   }
 }
 
 function validateEmail(input) {
   if(input.value.match(/^[A-Za-z\._\-[0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/)) {
-    messageOK(input);
+    messageValid(input);
   }
   else {
-    messageFailed(input, emailFalse);
+    messageInvalid(input, emailFalse);
   }
 }
 
 function validateTel(input) {
   if(input.value.match(/^[0-9]{6,15}$/)) {
-    messageOK(input);
+    messageValid(input);
   }
   else {
-    messageFailed(input, telFalse);
+    messageInvalid(input, telFalse);
   }
 }
 
 function validateMessage(input) {
   if(input.value.match(/^.{0,10000}$/)) {
-    messageOK(input);
+    messageValid(input);
   }
   else {
-    messageFailed(input, messageFalse);
+    messageInvalid(input, messageFalse);
   }
 }
 
 
-function messageOK(input) {
+function messageValid(input) {
   parent = input.parentNode;
   target = parent.querySelector('.message');
   parent.classList.remove('is-invalid')
@@ -241,7 +241,7 @@ function messageOK(input) {
   target.innerHTML = ''
 }
 
-function messageFailed(input, message) {
+function messageInvalid(input, message) {
   parent = input.parentNode;
   target = parent.querySelector('.message');
   parent.classList.remove('is-valid')
