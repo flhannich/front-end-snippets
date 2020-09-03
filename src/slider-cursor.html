@@ -43,7 +43,7 @@
     margin: 0 -5.4vw;
   }
   .slides-wrapper:not(.is-dragging) {
-    transition: transform .4s ease-out;
+    transition: transform 0.6s cubic-bezier(.32,.37,.05,1.01);
     -webkit-backface-visibility: hidden;
   }
   .slide {
@@ -88,9 +88,7 @@
     width: 50%;
     bottom: 0;
     z-index: 1;
-    cursor: pointer;
-    justify-content: center;
-    align-items: center;
+    cursor: none;
   }
   .controls.next {
     right: 0;
@@ -111,6 +109,41 @@
    .color-3 {
      background-color: #bbb;
    }
+   .cursor {
+     display: none;
+   }
+
+   @media(min-width: 768px) {
+     .cursor {
+       position: absolute;
+       top: -12px;
+       left: -12px;
+       z-index: 100;
+       pointer-events: none;
+       display: block;
+     }
+     .cursor:after {
+       content: '';
+       display: block;
+       width: 25px;
+       height: 25px;
+       background: #181818;
+       transform: scale(1);
+       opacity: 0;
+       transition: all 0.4s ease-out;
+     }
+     .cursor.is-active:after {
+       transform: scale(1.25);
+       opacity: 1;
+     }
+     .cursor.is-next:after {
+       transform: rotate(45deg);
+     }
+     .cursor.is-prev:after {
+       transform: rotate(-45deg);
+     }
+   }
+
 </style>
 
 <body>
@@ -125,10 +158,12 @@
       <div class="slide color-1"></div>
       <div class="slide color-2"></div>
     </div>
-    <div class="controls next" data-cursor>Next</div>
-    <div class="controls prev" data-cursor>Prev</div>
+    <div class="controls next" data-cursor></div>
+    <div class="controls prev" data-cursor></div>
     <div class="pagination"></div>
   </div>
+
+  <div class="cursor"></div>
 
 </div>
 
@@ -212,6 +247,8 @@ if (typeof window !== 'undefined') {
         let bullet = document.createElement('div');
 
         bullet.setAttribute('class', 'bullet');
+
+
         bullet.setAttribute('data-index', i + 1);
 
         paginationWrapper.appendChild(bullet);
@@ -255,7 +292,6 @@ if (typeof window !== 'undefined') {
     function dragMove(e) {
 
       e.preventDefault();
-
       wrapper.classList.add('is-dragging');
 
       distanceTouchMove = posTouchStart - e.touches[0].clientX;
@@ -349,7 +385,78 @@ if (typeof window !== 'undefined') {
 
     }
 
+
+if (window.innerWidth > 768)  {
+  costumeCursor();
+}
+
+  function costumeCursor() {
+
+  var cursorPosX, cursorPosY;
+  var posY = 0;
+
+  // var cursorWrapper = wrapper;
+  var controlsWrapper = document.querySelectorAll('.controls');;
+  var targets = document.querySelectorAll('[data-cursor]');
+  var cursor = document.querySelector('.cursor');
+
+
+  // cursorWrapper.addEventListener('mouseenter', mouseEnter);
+
+  controlsWrapper.forEach((item, i) => {
+    item.addEventListener('mousemove', mousePos);
   });
+
+  targets.forEach((item, i) => {
+    item.addEventListener('mouseenter', mouseEnter);
+    item.addEventListener('mouseleave', mouseLeave);
+  });
+
+  window.addEventListener('scroll', getYPos);
+
+  function getYPos(){
+    posY = window.scrollY;
+  }
+
+  function mousePos() {
+    cursorPosX = event.clientX;
+    cursorPosY = event.clientY;
+  }
+
+  function mouseEnter() {
+    if(event.target.classList.contains("next")) {
+      cursor.classList.remove('is-prev');
+      cursor.classList.add('is-next');
+    }
+    if(event.target.classList.contains("prev")) {
+      cursor.classList.remove('is-next');
+      cursor.classList.add('is-prev');
+    }
+    setTimeout(function() {
+
+      cursor.classList.add('is-active');
+    },50);
+  }
+
+  function mouseLeave() {
+    setTimeout(function() {
+      cursor.classList.remove('is-active');
+    },50);
+  }
+
+  function setPos() {
+    cursor.style.transform = `translate(${cursorPosX}px, ${cursorPosY + posY}px)`;
+  }
+
+  function render() {
+    setPos();
+    window.requestAnimationFrame(render);
+  }
+    window.requestAnimationFrame(render);
+
+  }
+
+    });
 
   }, 100);
 
