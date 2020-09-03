@@ -40,6 +40,7 @@
     -webkit-backface-visibility: hidden;
     line-height: 0;
     font-size: 0;
+    margin: 0 -5.4vw;
   }
   .slides-wrapper:not(.is-dragging) {
     transition: transform .4s ease-out;
@@ -51,6 +52,7 @@
     height: 400px;
     background-color: #ddd;
     padding: 40px;
+    margin: 0 5.4vw;
   }
   .pagination {
     display: flex;
@@ -60,20 +62,20 @@
   }
   .bullet {
     position: relative;
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     z-index: 3;
     cursor: pointer;
   }
   .bullet:after {
     content: '';
     position: absolute;
-    width: 8px;
-    height: 8px;
-    top: 11px;
-    left: 11px;
+    width: 10px;
+    height: 10px;
+    top: 12px;
+    left: 12px;
     border-radius: 100%;
-    background: #999;
+    background: #aaa;
     transition: transform 0.3s cubic-bezier(.32,.37,.05,1.01);
   }
   .bullet.is-active:after {
@@ -149,11 +151,8 @@ if (typeof window !== 'undefined') {
     var paginationWrapper = item.querySelector('.pagination');
     var slides = item.querySelectorAll('.slide');
     var length = slides.length;
-    var width = wrapper.getBoundingClientRect().width;
-
+    var width = wrapper.getBoundingClientRect().width + slideMargin();
     var treshold = 72;
-
-    var res;
 
     next.addEventListener('click', function() { shiftSlide(1) });
     prev.addEventListener('click', function() { shiftSlide(-1) });
@@ -162,56 +161,44 @@ if (typeof window !== 'undefined') {
     item.addEventListener('touchmove', dragMove );
     item.addEventListener('touchend', dragEnd );
 
+
     window.addEventListener('resize', function() {
 
-      clearTimeout(res);
+      var reset;
 
-      res = setTimeout(function() {
+      clearTimeout(reset);
 
-        width = wrapper.offsetWidth;
+      reset = setTimeout(function() {
+
+        width = wrapper.getBoundingClientRect().width + slideMargin();
         posX = width * (index - 1);
         wrapper.style.transform = "translate3D(" + -posX + "px, 0, 0) translateZ(0)";
 
-      }, 200);
+      }, 100);
+
     });
 
-    createPagination();
 
     slides.forEach((item, i) => {
+
       item.setAttribute('data-index', i + 1);
+
     });
 
+
+    createPagination();
     updateState(index);
 
 
+    function slideMargin() {
 
-    function updateState(index) {
+      let elem = window.getComputedStyle(slides[0]);
 
-      let active = item.querySelectorAll("[data-index]");
+      let margin = elem.getPropertyValue('margin-right');
 
-      active.forEach((item, i) => {
+      let res = margin.substring(0, margin.length - 2);
 
-        item.classList.remove('is-active');
-
-        if(item.dataset.index == index) {
-          item.classList.add('is-active');
-        }
-
-      });
-
-
-      if(index == 1) {
-        prev.classList.add('is-disabled')
-      }
-
-      else if(index == length){
-        next.classList.add('is-disabled')
-      }
-
-      else {
-        prev.classList.remove('is-disabled')
-        next.classList.remove('is-disabled')
-      }
+      return +res * 2;
 
     }
 
@@ -304,7 +291,6 @@ if (typeof window !== 'undefined') {
     function shiftSlide(dir) {
 
       if(dir == 1 && length > index) {
-        console.log(width);
         posX += width * dir;
         wrapper.style.transform = "translate3D(" + -posX + "px, 0 ,0)";
         index++;
@@ -316,7 +302,7 @@ if (typeof window !== 'undefined') {
         index--;
       }
 
-      if(index == 1){
+      if(index == 1) {
         posX = 0;
         wrapper.style.transform = "translate3D(0px, 0 , 0)"
         index = 1;
@@ -326,12 +312,43 @@ if (typeof window !== 'undefined') {
         posX = width * (length - 1);
         wrapper.style.transform = "translate3D(" + -posX + "px, 0, 0)";
         index = length;
-        next.classList.add('is-disabled')
       }
 
       updateState(index);
 
     };
+
+
+    function updateState(index) {
+
+      let active = item.querySelectorAll("[data-index]");
+
+      active.forEach((item, i) => {
+
+        item.classList.remove('is-active');
+
+        if(item.dataset.index == index) {
+          item.classList.add('is-active');
+        }
+
+      });
+
+      if(index == 1) {
+        prev.classList.add('is-disabled')
+        next.classList.remove('is-disabled')
+      }
+
+      else if(index == length) {
+        next.classList.add('is-disabled')
+        prev.classList.remove('is-disabled')
+      }
+
+      else {
+        prev.classList.remove('is-disabled')
+        next.classList.remove('is-disabled')
+      }
+
+    }
 
   });
 
