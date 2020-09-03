@@ -1,0 +1,94 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+
+<style>
+  body {
+    padding: 50px;
+    font-family: sans-serif;
+    font-size: 15px;
+  }
+  a {
+    display: block;
+    padding: 15px 0;
+  }
+  a:after {
+    margin-left: 10px;
+    text-decoration: none;
+    border: 1px solid red;
+    padding: 3px 5px;
+  }
+  a.has-ext:after {
+    content: 'ext';
+  }
+  a.has-pdf:after {
+    content: 'pdf';
+  }
+  a.has-doc:after {
+    content: 'doc';
+  }
+  a.has-pdf.has-ext:after{
+    content: 'ext pdf';
+  }
+</style>
+
+
+<body>
+
+    <a href="http://localhost/detect-extern-links.html">Link </a>
+    <a href="http://localhost/document.pdf">PDF </a>
+    <a href="http://localhost/document.doc">DOC </a>
+    <a href="http://www.news.ycombinator.com">Outgoing Link</a>
+    <a href="http://kliebhan.de/wp-content/uploads/2015/01/Mark-Twain-Awful-Germn-Language.pdf">Outgoing PDF</a>
+
+<script>
+
+var elem, className, time
+
+if (typeof window !== 'undefined') {
+
+  markLinks(['pdf', 'doc']);
+
+}
+
+function markLinks(files) {
+
+  let targets = document.querySelectorAll('a[href*="http"]');
+
+  targets.forEach((item, i) => {
+
+     let itemLinkArr = item.href.split('.');
+     let extension = itemLinkArr[itemLinkArr.length-1];
+
+      if(getHost(location.href) !== getHost(item.href)) {
+
+        item.classList.add('has-ext');
+
+      }
+
+      if(files.includes(extension)) {
+
+        item.classList.add('has-' + extension);
+
+      }
+  });
+}
+
+function getHost(url) {
+
+     return url.replace('http://','').replace('https://','').split('/')[0];
+
+};
+
+
+</script>
+
+
+</body>
+
+
+</html>
