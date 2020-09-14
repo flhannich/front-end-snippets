@@ -28,6 +28,18 @@
     max-width: 85%;
     margin: 0 auto;
   }
+  .slider-container {
+    max-width: 770px;
+    margin: 0 auto;
+  }
+  .slider-container.is-large {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    right: 30px;
+    bottom: 30px;
+    max-width: 100%;
+  }
   .slider {
     position: relative;
     overflow: hidden;
@@ -117,16 +129,21 @@
 
 <div class="container">
 
-  <div class="slider">
-    <div class="slides-wrapper">
-      <div class="slide color-1"></div>
-      <div class="slide color-2"></div>
-      <div class="slide color-3"></div>
-      <div class="slide color-1"></div>
-      <div class="slide color-2"></div>
+  <div class="slider-container">
+
+    <div class="counter"></div>
+    <button class="resize">Resize</button>
+    <div class="slider">
+      <div class="slides-wrapper">
+        <div class="slide color-1"></div>
+        <div class="slide color-2"></div>
+        <div class="slide color-3"></div>
+        <div class="slide color-1"></div>
+        <div class="slide color-2"></div>
+      </div>
+      <div class="controls next">Next</div>
+      <div class="controls prev">Prev</div>
     </div>
-    <div class="controls next" data-cursor>Next</div>
-    <div class="controls prev" data-cursor>Prev</div>
     <div class="pagination"></div>
   </div>
 
@@ -136,7 +153,7 @@
 
 if (typeof window !== 'undefined') {
 
-  var slider = document.querySelectorAll('.slider');
+  var slider = document.querySelectorAll('.slider-container');
 
   setTimeout(function() {
 
@@ -145,38 +162,32 @@ if (typeof window !== 'undefined') {
     var distanceTouchMove = 0;
     var posX = 0;
     var index = 1;
-    var next = item.querySelector('.next');
-    var prev = item.querySelector('.prev');
+    var next = item.querySelectorAll('.next');
+    var prev = item.querySelectorAll('.prev');
+    var resize = item.querySelector('.resize');
     var wrapper = item.querySelector('.slides-wrapper');
     var paginationWrapper = item.querySelector('.pagination');
+    var counterWrapper = item.querySelector('.counter');
     var slides = item.querySelectorAll('.slide');
     var length = slides.length;
     var width = wrapper.getBoundingClientRect().width + slideMargin();
     var treshold = 72;
 
-    next.addEventListener('click', function() { shiftSlide(1) });
-    prev.addEventListener('click', function() { shiftSlide(-1) });
+    next.forEach((item, i) => {
+      item.addEventListener('click', function() { shiftSlide(1) });
+    });
+
+    prev.forEach((item, i) => {
+      item.addEventListener('click', function() { shiftSlide(-1) });
+    });
 
     item.addEventListener('touchstart', dragStart );
     item.addEventListener('touchmove', dragMove );
     item.addEventListener('touchend', dragEnd );
 
+    resize.addEventListener('click', sliderResize );
 
-    window.addEventListener('resize', function() {
-
-      var reset;
-
-      clearTimeout(reset);
-
-      reset = setTimeout(function() {
-
-        width = wrapper.getBoundingClientRect().width + slideMargin();
-        posX = width * (index - 1);
-        wrapper.style.transform = "translate3D(" + -posX + "px, 0, 0) translateZ(0)";
-
-      }, 100);
-
-    });
+    window.addEventListener('resize', updateSize );
 
 
     slides.forEach((item, i) => {
@@ -190,6 +201,22 @@ if (typeof window !== 'undefined') {
     updateState(index);
 
 
+    function updateSize() {
+
+      var reset;
+
+      clearTimeout(reset);
+
+      reset = setTimeout(function() {
+
+        width = wrapper.getBoundingClientRect().width + slideMargin();
+        posX = width * (index - 1);
+        wrapper.style.transform = "translate3D(" + -posX + "px, 0, 0) translateZ(0)";
+
+      }, 100);
+
+    }
+
     function slideMargin() {
 
       let elem = window.getComputedStyle(slides[0]);
@@ -201,6 +228,29 @@ if (typeof window !== 'undefined') {
       return +res * 2;
 
     }
+
+
+
+    function sliderResize() {
+
+      event.preventDefault();
+
+      (item.classList.contains('is-large'))
+
+      ? item.classList.remove('is-large')
+      : item.classList.add('is-large')
+
+      updateSize();
+
+    }
+
+
+    function updateCounter(index) {
+
+      counterWrapper.innerHTML = index + ' / ' + length;
+
+    }
+
 
 
     function createPagination() {
@@ -321,6 +371,8 @@ if (typeof window !== 'undefined') {
 
     function updateState(index) {
 
+      updateCounter(index);
+
       let active = item.querySelectorAll("[data-index]");
 
       active.forEach((item, i) => {
@@ -334,18 +386,30 @@ if (typeof window !== 'undefined') {
       });
 
       if(index == 1) {
-        prev.classList.add('is-disabled')
-        next.classList.remove('is-disabled')
+        prev.forEach((item, i) => {
+          item.classList.add('is-disabled')
+        });
+        next.forEach((item, i) => {
+          item.classList.remove('is-disabled')
+        });
       }
 
       else if(index == length) {
-        next.classList.add('is-disabled')
-        prev.classList.remove('is-disabled')
+        prev.forEach((item, i) => {
+          item.classList.remove('is-disabled')
+        });
+        next.forEach((item, i) => {
+          item.classList.add('is-disabled')
+        });
       }
 
       else {
-        prev.classList.remove('is-disabled')
-        next.classList.remove('is-disabled')
+        prev.forEach((item, i) => {
+          item.classList.remove('is-disabled')
+        });
+        next.forEach((item, i) => {
+          item.classList.remove('is-disabled')
+        });
       }
 
     }
