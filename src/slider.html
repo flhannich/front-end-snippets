@@ -23,6 +23,9 @@
   h2 {
     font-size: 20px;
   }
+  .transition-disabled {
+    transition: none !important;
+  }
   .container {
     padding-top: 100px;
     max-width: 85%;
@@ -203,6 +206,8 @@ if (typeof window !== 'undefined') {
 
     function updateSize() {
 
+      wrapper.classList.add('transition-disabled');
+
       var reset;
 
       clearTimeout(reset);
@@ -213,7 +218,10 @@ if (typeof window !== 'undefined') {
         posX = width * (index - 1);
         wrapper.style.transform = "translate3D(" + -posX + "px, 0, 0) translateZ(0)";
 
-      }, 100);
+        item.offsetHeight; // Trigger a reflow, flushing the CSS changes
+        wrapper.classList.remove('transition-disabled');
+
+      }, 10);
 
     }
 
@@ -233,7 +241,6 @@ if (typeof window !== 'undefined') {
 
     function sliderResize() {
 
-      event.preventDefault();
 
       (item.classList.contains('is-large'))
 
