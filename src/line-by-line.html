@@ -44,15 +44,21 @@
 // Works only on "load" when setTimeout is <section>
 // last foreach loop "wrappedWordsRes" is very hacky
 
+document.addEventListener("load", lineByLine, true);
+window.addEventListener('resize', resetLineByLine, true);
+
+
 function resetLineByLine() {
 
   let selector = '.line-by-line'
+  let innerWrapperClass = '.line-container'
+  let outerWrapperClass = '.text-line'
 
   var wrapper = document.querySelectorAll(selector);
 
   wrapper.forEach((wrapper, i) => {
 
-    let container = wrapper.querySelectorAll('.line-container');
+    let container = wrapper.querySelectorAll(lineWrapperClass);
 
     if(container.length !== 0) {
       res = '';
@@ -96,7 +102,7 @@ function lineByLine() {
     var textContent = '';
     var res = '';
 
-    var beforeText = '<div class="text-line"><span class="line-container">';
+    var beforeText = '<div class="' + outerWrapperClass + '"><span class="' + lineWrapperClass + '">';
     var afterText = '</span></div>';
 
     wrappedWordsRes.forEach((item, i, arr) => {
@@ -128,8 +134,6 @@ function lineByLine() {
 }, 500);
 }
 
-document.addEventListener("load", lineByLine, true);
-window.addEventListener('resize', resetLineByLine, true);
 
 
 </script>
